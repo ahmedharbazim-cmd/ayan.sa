@@ -25,4 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
       window.open('https://wa.me/' + number + '?text=' + text, '_blank');
     });
   });
+
+  // زر واتساب العائم: رسالة تلقائية تتضمن اسم الصفحة لسياق أفضل مع فريق المبيعات
+  var waFloat = document.querySelector('.wa-float');
+  if (waFloat) {
+    var pageName = document.title.split('|')[0].trim();
+    var waMsg = 'مرحبًا عيان العقارية 👋، أنا مهتم بـ "' + pageName + '" وحاب أعرف أكثر.';
+    waFloat.href = waFloat.href.split('?')[0] + '?text=' + encodeURIComponent(waMsg);
+  }
 });
