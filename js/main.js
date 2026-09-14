@@ -9,7 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // إعدادات إرسال نسخة احتياطية من كل طلب فورم للإيميل عبر Web3Forms
+  var WEB3FORMS_ACCESS_KEY = 'bbe21ea4-5424-48c7-becb-d2587ae58a11';
+
   // أي فورم عليه data-whatsapp="9665XXXXXXXX" بيتحول تلقائيًا لرسالة واتساب معبأة
+  // وفي نفس الوقت بيتبعت نسخة منه على الإيميل عشان محدش يضيع منه طلب
   document.querySelectorAll('form[data-whatsapp]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -23,6 +27,19 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       var text = encodeURIComponent(lines.join('\n'));
       window.open('https://wa.me/' + number + '?text=' + text, '_blank');
+
+      // إرسال نسخة احتياطية على الإيميل (مايوقفش ولا يأخر فتح الواتساب فوق)
+      var payload = { access_key: WEB3FORMS_ACCESS_KEY, subject: title, from_name: 'موقع عيان العقارية' };
+      form.querySelectorAll('[name]').forEach(function (field) {
+        var label = field.getAttribute('data-label') || field.name;
+        var value = field.value.trim();
+        if (value) payload[label] = value;
+      });
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function () { /* تجاهل أي خطأ شبكة حتى لا يعطل تجربة المستخدم */ });
     });
   });
 
